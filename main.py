@@ -125,16 +125,17 @@ def main(config_path: str, skills_path:str, extraction:str, raw:str='raw.csv', d
     data_dict['api_key'] = os.getenv('SCRAPPING_DOG_API')
     
     # get the data from linkedin
-    # get_request(data_dict, extraction, raw)
+    get_request(data_dict, extraction, raw)
 
     # get the job description
     df_extraction = pd.read_csv(join(extraction, raw))
-    # get_job_description(df_extraction['job_id'].values.tolist()[:15], data_dict, extraction, description)
-
+    get_job_description(df_extraction['job_id'].values.tolist(), data_dict, extraction, description)
+    
+    # load the job description
     df_job = pd.read_csv(join(extraction, description), usecols=interested_cols)
     
+    # instantite the FAISS
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-
     index = faiss.IndexFlatL2(len(embeddings.embed_query("hello world")))
     vector_store = FAISS(
         embedding_function=embeddings,
@@ -142,11 +143,14 @@ def main(config_path: str, skills_path:str, extraction:str, raw:str='raw.csv', d
         docstore=InMemoryDocstore(),
         index_to_docstore_id={},)
     
+    # add extracted documents into FAISS
     document_list, uuids = create_documents(df_job)
     vector_store.add_documents(documents=document_list, ids=uuids)
-    
+    # instantiate the retriever
     retriever = vector_store.as_retriever(search_type='mmr', search_kwargs={'k':10})
     results = retriever.invoke(f"What is the best role for a {data_dict['field'].replace('%20', ' ')} with the following skills: {skills_dict['skills']}")
+    
+    # format result to display data
     result_list = []
     for result in results:
         result_list.append(result.metadata)
