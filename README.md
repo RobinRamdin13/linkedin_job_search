@@ -17,6 +17,18 @@ There are two files that require user inputs to run this script. The respective 
 
 The output from the code will display a Pandas DataFrame which contains the best suited jobs in descending order as well as the link for a direct job application (if provided from LinkedIn)
 
+### Running the Code 
+#### Creating Virtual Environment
+To create the virtual environment run the following code in your terminal, you can rename `env` to any name you want for your virtual environment.`python -m venv env`.
+
+In the event the virtual environment has not yet been activate, you need to run the following command: `env\Scripts\activate.bat`. This might defer based on which machine you're using, I was using Visual Studio Code on a Windows and the command prompt as terminal. 
+
+#### Install all the dependencies 
+After creating the virtual environment, run the following command, this will download all the required libraries required to replicate the code. `python pip install -r requirements.txt`
+
+#### Executing main.py
+To run the main file run the following command within your terminal `python main.py`.
+
 ### ScrappingDog APIs 
 We are using the ScrappingDog free API to LinkedIn to extract the data without being blocked. While the number of credits in the free account is sufficient for a rapid development such as this. For scaling and further usage a premium plan will be required. Due to the limit on the total number of API calls, I have restricted to job extraction to 15 positions during development. For more information on ScrappingDog visit [here](https://www.scrapingdog.com/).
 
